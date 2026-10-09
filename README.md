@@ -22,19 +22,7 @@ Plataforma web para digitalizar los procesos de la clínica veterinaria: citas, 
 
 Requisitos: Node.js 20+ y una base de datos PostgreSQL (Neon).
 
-```bash
-# 1. Backend
-cd backend
-cp .env.example .env          # pega tu DATABASE_URL de Neon
-npm install
-npm run setup                 # crea las tablas y carga datos de demo
-npm run dev                   # API en http://localhost:4000
 
-# 2. Frontend (otra terminal)
-cd frontend
-npm install
-npm run dev                   # app en http://localhost:5173
-```
 
 ### Cuentas de demostración
 
