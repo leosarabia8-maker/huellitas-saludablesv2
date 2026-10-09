@@ -22,15 +22,30 @@ Plataforma web para digitalizar los procesos de la clínica veterinaria: citas, 
 
 Requisitos: Node.js 20+ y una base de datos PostgreSQL (Neon).
 
+```bash
+# 1. Backend
+cd backend
+cp .env.example .env          # pega tu DATABASE_URL de Neon
+npm install
+npm run setup                 # crea las tablas y carga datos de demo
+npm run dev                   # API en http://localhost:4000
 
+# 2. Frontend (otra terminal)
+cd frontend
+npm install
+npm run dev                   # app en http://localhost:5173
+```
 
 ### Cuentas de demostración
 
-| Rol | Email | Contraseña |
-|---|---|---|
-| 👩‍⚕️ Veterinario | `vet@huellitas.dev` | `vet123` |
-| 🗂️ Recepción | `recepcion@huellitas.dev` | `recepcion123` |
-| 🐾 Cliente | `cliente@huellitas.dev` | `cliente123` |
+| Rol | Email |
+|---|---|
+| 👩‍⚕️ Veterinario | `vet@huellitas.dev` |
+| 🧑‍⚕️ Veterinario 2 | `vet2@huellitas.dev` |
+| 🗂️ Recepción | `recepcion@huellitas.dev` |
+| 🐾 Cliente | `cliente@huellitas.dev` |
+
+> 🔒 **Las contraseñas no se publican en este repositorio.** Se definen con las variables de entorno `SEED_PASS_VET`, `SEED_PASS_RECEPCION` y `SEED_PASS_CLIENTE` (ver `backend/.env.example`) y el equipo las comparte por canal privado.
 
 ## ☁️ Despliegue gratuito
 
@@ -46,6 +61,7 @@ Requisitos: Node.js 20+ y una base de datos PostgreSQL (Neon).
 5. Variables de entorno:
    - `DATABASE_URL` = connection string de Neon
    - `JWT_SECRET` = un texto largo aleatorio
+   - `SEED_PASS_VET`, `SEED_PASS_RECEPCION`, `SEED_PASS_CLIENTE` = contraseñas de las cuentas demo (el build corre el seed)
    - `FRONTEND_URL` = la URL de Vercel (se configura al final del paso 3)
 
 ### 3. Frontend — [Vercel](https://vercel.com)

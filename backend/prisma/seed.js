@@ -18,12 +18,22 @@ async function main() {
 
   const hash = (p) => bcrypt.hashSync(p, 10);
 
+  // Las contraseñas de las cuentas demo NO van en el código (el repo es público):
+  // se leen de variables de entorno (ver .env.example)
+  const passVet = process.env.SEED_PASS_VET;
+  const passRecepcion = process.env.SEED_PASS_RECEPCION;
+  const passCliente = process.env.SEED_PASS_CLIENTE;
+  if (!passVet || !passRecepcion || !passCliente) {
+    console.error("❌ Faltan SEED_PASS_VET, SEED_PASS_RECEPCION y/o SEED_PASS_CLIENTE en las variables de entorno (ver .env.example)");
+    process.exit(1);
+  }
+
   // ── Usuarios (equipo 7 😄) ──
   const vet1 = await prisma.usuario.create({
     data: {
       nombre: "Dra. Stephani Mosquera",
       email: "vet@huellitas.dev",
-      password: hash("vet123"),
+      password: hash(passVet),
       rol: "VETERINARIO",
     },
   });
@@ -31,7 +41,7 @@ async function main() {
     data: {
       nombre: "Dr. Leonardo Sanguña",
       email: "vet2@huellitas.dev",
-      password: hash("vet123"),
+      password: hash(passVet),
       rol: "VETERINARIO",
     },
   });
@@ -39,7 +49,7 @@ async function main() {
     data: {
       nombre: "Mario Montero",
       email: "recepcion@huellitas.dev",
-      password: hash("recepcion123"),
+      password: hash(passRecepcion),
       rol: "RECEPCIONISTA",
     },
   });
@@ -49,7 +59,7 @@ async function main() {
     data: {
       nombre: "Diana Ortiz",
       email: "cliente@huellitas.dev",
-      password: hash("cliente123"),
+      password: hash(passCliente),
       rol: "CLIENTE",
       propietario: {
         create: {
@@ -195,11 +205,11 @@ async function main() {
     },
   });
 
-  console.log("✅ Seed listo. Usuarios de demostración:");
-  console.log("   👩‍⚕️ vet@huellitas.dev / vet123           (Veterinario)");
-  console.log("   🧑‍⚕️ vet2@huellitas.dev / vet123          (Veterinario 2)");
-  console.log("   🗂️ recepcion@huellitas.dev / recepcion123 (Recepcionista)");
-  console.log("   🐶 cliente@huellitas.dev / cliente123    (Cliente)");
+  console.log("✅ Seed listo. Usuarios de demostración (contraseñas tomadas de las variables SEED_PASS_*):");
+  console.log("   👩‍⚕️ vet@huellitas.dev        (Veterinario)");
+  console.log("   🧑‍⚕️ vet2@huellitas.dev       (Veterinario 2)");
+  console.log("   🗂️ recepcion@huellitas.dev (Recepcionista)");
+  console.log("   🐶 cliente@huellitas.dev    (Cliente)");
 }
 
 main()

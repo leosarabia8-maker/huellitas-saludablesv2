@@ -7,7 +7,8 @@ const router = Router();
 router.use(autenticar);
 
 // GET /api/mascotas/buscar?q= — búsqueda en tiempo real por nombre o código (RF-02)
-router.get("/buscar", async (req, res) => {
+// Solo personal de la clínica: expone datos de propietarios (el cliente usa /api/portal)
+router.get("/buscar", requireRol("VETERINARIO", "RECEPCIONISTA"), async (req, res) => {
   const q = (req.query.q || "").trim();
   if (q.length < 1) return res.json([]);
   const resultados = await prisma.mascota.findMany({
@@ -26,7 +27,8 @@ router.get("/buscar", async (req, res) => {
 });
 
 // GET /api/mascotas/:id — ficha completa: historial clínico, vacunas, alergias (RF-04, RF-07)
-router.get("/:id", async (req, res) => {
+// Solo personal de la clínica (mismo criterio que /buscar)
+router.get("/:id", requireRol("VETERINARIO", "RECEPCIONISTA"), async (req, res) => {
   const mascota = await prisma.mascota.findUnique({
     where: { id: req.params.id },
     include: {

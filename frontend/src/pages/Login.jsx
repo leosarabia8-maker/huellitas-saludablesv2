@@ -2,12 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth.jsx";
 
-const DEMO = [
-  { rol: "👩‍⚕️ Veterinario", email: "vet@huellitas.dev", pass: "vet123" },
-  { rol: "🗂️ Recepción", email: "recepcion@huellitas.dev", pass: "recepcion123" },
-  { rol: "🐾 Cliente", email: "cliente@huellitas.dev", pass: "cliente123" },
-];
-
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -16,12 +10,12 @@ export default function Login() {
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
 
-  const entrar = async (e, credenciales) => {
-    e?.preventDefault();
+  const entrar = async (e) => {
+    e.preventDefault();
     setError("");
     setCargando(true);
     try {
-      await login(credenciales?.email || email, credenciales?.pass || password);
+      await login(email, password);
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -77,22 +71,6 @@ export default function Login() {
             Crea tu cuenta
           </Link>
         </p>
-
-        <div className="mt-6 border-t pt-4">
-          <p className="text-xs text-gray-400 text-center mb-2">Cuentas de demostración (clic para entrar):</p>
-          <div className="space-y-1.5">
-            {DEMO.map((d) => (
-              <button
-                key={d.email}
-                onClick={(e) => entrar(null, d)}
-                className="w-full text-left text-xs bg-teal-50 hover:bg-teal-100 rounded-lg px-3 py-2 transition"
-              >
-                <span className="font-medium">{d.rol}</span>
-                <span className="text-gray-500 float-right">{d.email}</span>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
