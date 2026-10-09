@@ -1,0 +1,135 @@
+// Huellitas Saludables — Modelo de datos
+// PostgreSQL (Neon) vía Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  VETERINARIO
+  RECEPCIONISTA
+  CLIENTE
+}
+
+enum Especie {
+  PERRO
+  GATO
+}
+
+enum EstadoCita {
+  PENDIENTE
+  CONFIRMADA
+  CANCELADA
+  COMPLETADA
+}
+
+model Usuario {
+  id        String   @id @default(cuid())
+  nombre    String
+  email     String   @unique
+  password  String
+  rol       Rol
+  // Si está inactivo: no puede iniciar sesión ni ser agendado, pero su historial se conserva
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  // Si es veterinario: citas y consultas que atiende
+  citasAtendidas     Cita[]     @relation("VeterinarioCitas")
+  consultas          Consulta[]
+  vacunasAplicadas   Vacuna[]
+  // Si es cliente: perfil de propietario vinculado
+  propietario        Propietario?
+}
+
+model Propietario {
+  id        String    @id @default(cuid())
+  nombre    String
+  telefono  String
+  email     String?
+  direccion String?
+  // Vínculo opcional con la cuenta del portal del cliente
+  usuario   Usuario?  @relation(fields: [usuarioId], references: [id])
+  usuarioId String?   @unique
+  mascotas  Mascota[]
+  createdAt DateTime  @default(now())
+}
+
+model Mascota {
+  id            String     @id @default(cuid())
+  // Clave única alfanumérica autogenerada, ej: HU-4F2A (RS-06)
+  codigo        String     @unique
+  nombre        String
+  especie       Especie
+  raza          String
+  edadAnios     Int
+  sexo          String // "M" | "H"
+  color         String?
+  propietario   Propietario @relation(fields: [propietarioId], references: [id])
+  propietarioId String
+  alergias      Alergia[]
+  consultas     Consulta[]
+  vacunas       Vacuna[]
+  citas         Cita[]
+  createdAt     DateTime   @default(now())
+
+  @@index([nombre])
+  @@index([codigo])
+}
+
+model Alergia {
+  id          String  @id @default(cuid())
+  medicamento String // ej: "Penicilina"
+  descripcion String?
+  mascota     Mascota @relation(fields: [mascotaId], references: [id], onDelete: Cascade)
+  mascotaId   String
+}
+
+model Cita {
+  id            String     @id @default(cuid())
+  fechaHora     DateTime
+  duracionMin   Int        @default(30)
+  motivo        String
+  estado        EstadoCita @default(PENDIENTE)
+  mascota       Mascota    @relation(fields: [mascotaId], references: [id])
+  mascotaId     String
+  veterinario   Usuario    @relation("VeterinarioCitas", fields: [veterinarioId], references: [id])
+  veterinarioId String
+  createdAt     DateTime   @default(now())
+  consulta      Consulta?
+
+  @@index([veterinarioId, fechaHora])
+}
+
+model Consulta {
+  id            String   @id @default(cuid())
+  motivo        String
+  sintomas      String
+  diagnostico   String
+  tratamiento   String // receta digital
+  mascota       Mascota  @relation(fields: [mascotaId], references: [id])
+  mascotaId     String
+  veterinario   Usuario  @relation(fields: [veterinarioId], references: [id])
+  veterinarioId String
+  cita          Cita?    @relation(fields: [citaId], references: [id])
+  citaId        String?  @unique
+  // Trazabilidad automática (RF-05): fecha/hora y profesional, inalterables
+  createdAt     DateTime @default(now())
+}
+
+model Vacuna {
+  id              String    @id @default(cuid())
+  tipo            String // ej: "Rabia", "Parvovirus"
+  dosis           String // ej: "1 dosis - 1ml"
+  fechaAplicacion DateTime  @default(now())
+  intervaloDias   Int // días de validez para calcular la próxima dosis
+  proximaDosis    DateTime // calculada automáticamente (RF-07)
+  mascota         Mascota   @relation(fields: [mascotaId], references: [id])
+  mascotaId       String
+  veterinario     Usuario?  @relation(fields: [veterinarioId], references: [id])
+  veterinarioId   String?
+}
