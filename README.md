@@ -18,23 +18,6 @@ Plataforma web para digitalizar los procesos de la clínica veterinaria: citas, 
 - **Recepcionista**: registro de pacientes con **ID único alfanumérico**, agenda con vistas día/semana/mes, **bloqueo automático de cruces de horario**, reprogramación y cancelación. También **gestiona doctores**: altas y activación/desactivación (sin borrar historiales, por trazabilidad).
 - **Cliente**: portal con auto-registro, **registro de sus propias mascotas**, agendamiento autónomo con disponibilidad en vivo, **carné de vacunación digital** y confirmación de cita en pantalla.
 
-## 🚀 Ejecutar en local (Ubuntu)
-
-Requisitos: Node.js 20+ y una base de datos PostgreSQL (Neon).
-
-```bash
-# 1. Backend
-cd backend
-cp .env.example .env          # pega tu DATABASE_URL de Neon
-npm install
-npm run setup                 # crea las tablas y carga datos de demo
-npm run dev                   # API en http://localhost:4000
-
-# 2. Frontend (otra terminal)
-cd frontend
-npm install
-npm run dev                   # app en http://localhost:5173
-```
 
 ### Cuentas de demostración
 
